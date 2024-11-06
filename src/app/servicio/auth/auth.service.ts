@@ -42,5 +42,14 @@ export class AuthService {
     } );
     }
 
+    // cerramos sesion
+    public cerrarSesion(){
+      if (this.userLogeado){
+        this.userLogeado = null;
+        this.accesToken = null;
+      }
+    }
+
+
   }
 
