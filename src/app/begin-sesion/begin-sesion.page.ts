@@ -26,14 +26,15 @@ private subCargando!: Subscription;
     this.formulario = fb.group({
       //recibira texto vacio inicialmente
       usuario:['', [Validators.required]],
-      contrasena: ['', [Validators.required]]
+      contrasena: ['', [Validators.required]],
+      rememberMe: [false], //definimos rememberMe en el formulario
     })
   }
   //metodo para validar en el submit que todo este correcto
   public validarFormulario () {
     const esValido = this.formulario.valid;
     if (!esValido){
-      return
+      return;
     }
     const datos = this.formulario.getRawValue();
     const usuario = datos ['usuario'];

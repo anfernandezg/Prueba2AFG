@@ -7,6 +7,7 @@ import {UserLogeado} from '../../interfaces/UserLogeado';
 
 //un observador que permita bloquear formulario y añada un boton  visual de cargando en la pagina
 import {BehaviorSubject} from 'rxjs';
+import { Router } from '@angular/router';
 
 //este servicio se inyecta en root y vive una sola vez
 @Injectable({
@@ -25,7 +26,9 @@ export class AuthService {
 
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
+
   ) { 
 
   }
@@ -47,6 +50,7 @@ export class AuthService {
       this.accesToken = mi_observador.acessToken;
       this.userLogeado = mi_observador;
       console.log(mi_observador, 200);
+      this.router.navigate(['/','productos']);//si el usuario ingresa de forma correcta esto lo lleva a la pagina de producto
       //observador
       this.$cargando.next(false);
     } );
