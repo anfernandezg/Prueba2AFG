@@ -12,6 +12,10 @@ const routes: Routes = [
     path: 'begin-sesion',
     loadChildren: () => import('./begin-sesion/begin-sesion.module').then( m => m.BeginSesionPageModule)
   },
+  {
+    path: 'productos',
+    loadChildren: () => import('./productos/productos.module').then( m => m.ProductosPageModule)
+  },
 ];
 
 @NgModule({
