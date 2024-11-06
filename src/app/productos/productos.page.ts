@@ -1,61 +1,55 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from './../servicio/auth/auth.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ProductoRespuesta } from '../interfaces/Producto'; // Importa la interfaz
+import { Component } from '@angular/core';
+import { ProductoService } from './../servicio/producto/producto.service';
+import { Producto } from './../interfaces/Producto';
+import { ViewWillEnter, ViewDidEnter } from '@ionic/angular';
 
 @Component({
   selector: 'app-productos',
   templateUrl: './productos.page.html',
   styleUrls: ['./productos.page.scss'],
 })
-export class ProductosPage implements OnInit {
-  productos: ProductoRespuesta[] = []; // Usa la interfaz para tipar el array de productos
-  skip: number = 0;
-  limit: number = 30;
-  
-  total: number = 0;
+export class ProductosPage implements ViewWillEnter, ViewDidEnter {
+  productos: Producto[] = []; // Aquí almacenaremos los productos
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(private productoService: ProductoService) {}
 
-  ngOnInit() {
-    this.loadProducts();
-  }
-
-  loadProducts(event?: any) {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.auth.accesToken}`
+  // Este método se ejecutará cada vez que la página esté a punto de entrar
+  ionViewWillEnter(): void {
+    console.log('ProductosPage va a entrar en la vista');
+    // Nos suscribimos al BehaviorSubject del servicio para recibir los productos
+    this.productoService.producto.subscribe((datos) => {
+      this.productos = datos;
     });
 
-    // Usar la interfaz para definir el tipo de la respuesta esperada
-    this.http.get<{ products: ProductoRespuesta[], total: number }>(`https://dummyjson.com/auth/products?limit=${this.limit}&skip=${this.skip}`, { headers })
-      .subscribe(response => {
-        this.productos = [...this.productos, ...response.products];
-        this.total = response.total;
-
-        if (event) {
-          event.target.complete();
-        }
-
-        // Incrementa el valor de skip para la próxima solicitud
-        this.skip += this.limit;
-
-        // Deshabilita el infinite scroll si se han cargado todos los productos
-        if (this.productos.length >= this.total) {
-          event?.target.disabled = true;
-        }
-      }, error => {
-        console.error('Error al cargar los productos:', error);
-        if (event) {
-          event.target.complete();
-        }
-      });
+    // Carga inicial de productos
+    this.productoService.cargarProductos('inicial');
   }
 
+  // Este método se ejecutará después de que la página haya entrado completamente
+  ionViewDidEnter(): void {
+    console.log('ProductosPage ya ha entrado en la vista');
+  }
+
+  // Método que se llama al alcanzar el final del scroll para cargar más productos
   loadMoreProducts(event: any) {
-    this.loadProducts(event);
+    this.productoService.cargarProductos('siguiente');
+
+    // Asegurarse de que el evento se complete cuando se hayan cargado los datos
+    setTimeout(() => {
+      event.target.complete();
+
+      // Si no hay más productos para cargar, desactivar el infinite scroll
+      if (this.productos.length >= this.productoService.total) {
+        event.target.disabled = true;
+      }
+    }, 500); // El timeout ayuda a simular el tiempo que tarda la carga
   }
 
-  cerrarSesion() {
-    this.auth.cerrarSesion();
+  // Método para refrescar manualmente la lista de productos
+  doRefresh(event: any) {
+    this.productoService.cargarProductos('inicial');
+    setTimeout(() => {
+      event.target.complete(); // Completa la acción del refresher
+    }, 1000);
   }
 }

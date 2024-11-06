@@ -19,7 +19,7 @@ export class AuthService {
   public userLogeado : UserLogeado | null = null
   
   //usare el token aqui
-  public accesToken: string | null = null;
+  public accessToken: string | null = null;
   //observador de cargando
   private $cargando = new BehaviorSubject<boolean>(false);
   public cargando = this.$cargando.asObservable();
@@ -47,9 +47,9 @@ export class AuthService {
       }
     })
     .subscribe (mi_observador => {
-      this.accesToken = mi_observador.acessToken;
+      this.accessToken = mi_observador.accessToken;
       this.userLogeado = mi_observador;
-      console.log(mi_observador, 200);
+      console.log('Respuesta del servidor', mi_observador, 200);
       this.router.navigate(['/','productos']);//si el usuario ingresa de forma correcta esto lo lleva a la pagina de producto
       //observador
       this.$cargando.next(false);
@@ -60,7 +60,7 @@ export class AuthService {
     public cerrarSesion(){
       if (this.userLogeado){
         this.userLogeado = null;
-        this.accesToken = null;
+        this.accessToken = null;
       }
     }
 

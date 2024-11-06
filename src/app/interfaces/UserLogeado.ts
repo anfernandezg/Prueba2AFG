@@ -6,7 +6,7 @@ email: string;
 firstName: string; 
 lastName: string; 
 gender: string;
-acessToken: string;
+accessToken: string;
 
 
 }
