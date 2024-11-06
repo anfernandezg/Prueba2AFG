@@ -5,6 +5,9 @@ import { HttpClient} from '@angular/common/http';
 import {BodyLogin} from './../../interfaces/BodyLogin';
 import {UserLogeado} from '../../interfaces/UserLogeado';
 
+//un observador que permita bloquear formulario y añada un boton  visual de cargando en la pagina
+import {BehaviorSubject} from 'rxjs';
+
 //este servicio se inyecta en root y vive una sola vez
 @Injectable({
   providedIn: 'root'
@@ -16,6 +19,9 @@ export class AuthService {
   
   //usare el token aqui
   public accesToken: string | null = null;
+  //observador de cargando
+  private $cargando = new BehaviorSubject<boolean>(false);
+  public cargando = this.$cargando.asObservable();
 
 
   constructor(
@@ -25,6 +31,8 @@ export class AuthService {
   }
 //mis variables
   public iniciarSesion (nombreusuario: string, contrasena: string){
+    //observable
+    this.$cargando.next(true);
     const body ={
       username: nombreusuario,
       password: contrasena
@@ -39,10 +47,12 @@ export class AuthService {
       this.accesToken = mi_observador.acessToken;
       this.userLogeado = mi_observador;
       console.log(mi_observador, 200);
+      //observador
+      this.$cargando.next(false);
     } );
     }
 
-    // cerramos sesion
+    // Se crea el metodo para cerrar sesion
     public cerrarSesion(){
       if (this.userLogeado){
         this.userLogeado = null;
