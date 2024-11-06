@@ -1,0 +1,7 @@
+{
+  "name": "prueba2AFG",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
